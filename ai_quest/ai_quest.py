@@ -201,14 +201,7 @@ pyplot.plot(pred)
 sample[1] = pred
 sample.to_csv("submit01.csv", index=None, header=None)
 
-
 # %%
-def learning_only(trainX, y_train):
-    model2 = RF(n_estimators=100, max_depth=4, random_state=777)
-    model2.fit(trainX.iloc[:, ~trainX.columns.str.match("y")], y_train)
-    return model2
-
-
 train = pandas.read_csv("./train.csv")
 test = pandas.read_csv("./test.csv")
 sample = pandas.read_csv("./sample_submit.csv", header=None)
@@ -222,6 +215,31 @@ cols = [
     "property_type", "cancellation_policy", "room_type", "number_of_reviews",
     "review_scores_rating", "y"
 ]
+
+from sklearn.ensemble import GradientBoostingRegressor as GBR
+from sklearn.experimental import enable_hist_gradient_boosting
+from sklearn.ensemble import HistGradientBoostingRegressor as HGBR
+
+
+def learning_gbr(trainX, y_train):
+    model3 = GBR(n_estimators=1000,
+                 learning_rate=0.1,
+                 max_depth=4,
+                 random_state=777,
+                 loss='ls')
+    model3.fit(trainX.iloc[:, ~trainX.columns.str.match("y")], y_train)
+    return model3
+
+
+def learning_hgbr(trainX, y_train):
+    model4 = HGBR(max_iter=100,
+                  learning_rate=0.5,
+                  max_depth=10,
+                  random_state=777,
+                  loss='least_squares')
+    model4.fit(trainX.iloc[:, ~trainX.columns.str.match("y")], y_train)
+    return model4
+
 
 kf = KFold(n_splits=5, random_state=777)
 tr = dat[dat["t"] == 1][cols]
@@ -241,10 +259,13 @@ for train_index, test_index in kf.split(tr):
     y_train = tmp[tmp["tt"] == 1]["y"]
     y_test = tmp[tmp["tt"] == 0]["y"]
 
-    model2 = learning_only(trainX, y_train)
+    # model3 = learning_gbr(trainX, y_train)
+    model4 = learning_hgbr(trainX, y_train)
 
-    pred_train = model2.predict(trainX.iloc[:, ~testX.columns.str.match("y")])
-    pred_test = model2.predict(testX.iloc[:, ~testX.columns.str.match("y")])
+    # pred_train = model3.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
+    pred_train = model4.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
+    # pred_test = model3.predict(testX.iloc[:, ~testX.columns.str.match("y")])
+    pred_test = model4.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 
     print("TRAIN:",
           MSE(y_train, pred_train)**0.5, "VARIDATE",
@@ -253,41 +274,34 @@ for train_index, test_index in kf.split(tr):
     tests.append(MSE(y_test, pred_test)**0.5)
 print("AVG")
 print(numpy.array(trains).mean(), numpy.array(tests).mean())
+
 # %%
 cols = [
     "property_type", "cancellation_policy", "room_type", "number_of_reviews",
     "review_scores_rating", "y", "t"
 ]
 tmp = pandas.get_dummies(dat[cols])
-tmp_upper = tmp.query("y > 185")
-tmp_down = tmp.query("y <= 185")
-
-trainX = tmp_down[tmp_down["t"] == 1]
-trainX_upper = tmp_upper[tmp_upper["t"] == 1]
+trainX = tmp[tmp["t"] == 1]
 del trainX["t"]
-del trainX_upper["t"]
 testX = tmp[tmp["t"] == 0]
 del testX["t"]
-y_train = tmp_down[tmp_down["t"] == 1]["y"]
-y_train_upper = tmp_upper[tmp_upper["t"] == 1]["y"]
+y_train = tmp[tmp["t"] == 1]["y"]
 y_test = tmp[tmp["t"] == 0]["y"]
 
-model2 = learning_only(trainX, y_train)
-model2_upper = learning_only(trainX_upper, y_train_upper)
-pred = (
-    model2.predict(trainX.iloc[:, ~trainX.columns.str.match("y")]) +
-    model2_upper.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])) / 2
+# model3 = learning_gbr(trainX, y_train)
+model4 = learning_hgbr(trainX, y_train)
+# pred = model3.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
+pred = model4.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
 
 p = pandas.DataFrame({"actual": y_train, "pred": pred})
 p.plot(figsize=(15, 4))
 print("RMSE", MSE(y_train, pred)**0.5)
 
 # %%
-model2 = learning_only(trainX, y_train)
-model2_upper = learning_only(trainX_upper, y_train_upper)
-pred = (model2.predict(testX.iloc[:, ~testX.columns.str.match("y")]) +
-        model2_upper.predict(testX.iloc[:, ~testX.columns.str.match("y")])) / 2
-
+# model3 = learning_gbr(trainX, y_train)
+model4 = learning_hgbr(trainX, y_train)
+# pred = model3.predict(testX.iloc[:, ~testX.columns.str.match("y")])
+pred = model4.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 pyplot.figure(figsize=(15, 4))
 pyplot.plot(pred)
 
