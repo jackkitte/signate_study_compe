@@ -12,17 +12,19 @@ from learning import (linear_regression_and_random_forest,
 from visualize import visualize_for_continuous, visualize_for_category, visualize_for_category_1d
 
 seaborn.set(font="IPAexGothic", style="white")
-
 train = pandas.read_csv("train.csv")
 test = pandas.read_csv("test.csv")
 sample = pandas.read_csv("sample_submit.csv", header=None)
+
 print("Data Shapes")
 print("Train:", train.shape, "Test:", test.shape, "Sample:", sample.shape)
 
 # %%
 train.head()
+
 # %%
 train.describe()
+
 # %%
 train.describe(include='O')
 
@@ -30,6 +32,7 @@ train.describe(include='O')
 train_upper = train.query("y > 185")
 train_upper = train_upper.reset_index(drop=True)
 train_upper.head()
+
 # %%
 train_upper.describe()
 
@@ -85,6 +88,7 @@ cols = [
 
 tr = dat[dat["t"] == 1][cols]
 k_fold_for_LR_and_RF(tr)
+
 # %%
 cols = [
     "property_type", "cancellation_policy", "room_type", "number_of_reviews",
