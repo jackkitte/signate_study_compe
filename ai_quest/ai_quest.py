@@ -1,9 +1,16 @@
 # %%
 import pandas
 import numpy
-from matplotlib import pyplot
 import seaborn
+from matplotlib import pyplot
+from sklearn.metrics import mean_squared_error as MSE
+
+from learning import (linear_regression_and_random_forest,
+                      gradient_boosting_regressor,
+                      hist_gradient_boosting_regressor, k_fold_for_LR_and_RF,
+                      k_fold_for_GBR, k_fold_for_HGBR)
 from visualize import visualize_for_continuous, visualize_for_category, visualize_for_category_1d
+
 seaborn.set(font="IPAexGothic", style="white")
 
 train = pandas.read_csv("train.csv")
@@ -20,14 +27,14 @@ train.describe()
 train.describe(include='O')
 
 # %%
-train_uppder = train.query("y > 185")
-train_uppder = train_uppder.reset_index(drop=True)
-train_uppder.head()
+train_upper = train.query("y > 185")
+train_upper = train_upper.reset_index(drop=True)
+train_upper.head()
 # %%
-train_uppder.describe()
+train_upper.describe()
 
 # %%
-train_uppder.describe(include='O')
+train_upper.describe(include='O')
 
 # %%
 name_continuous_list = numpy.array([
@@ -51,35 +58,16 @@ name_category_few_list = numpy.array(["host_response_rate", "property_type"])
 visualize_for_category_1d(train, name_category_few_list)
 
 # %%
-Color = numpy.array([0.5, 0.5, 0.5]).reshape(1, -1)
-fig, ax = pyplot.subplots(2, 4, figsize=(12, 9))
-train.plot.scatter(x="accommodates", y="y", ax=ax[0][0], c=Color)
-train.plot.scatter(x="bathrooms", y="y", ax=ax[0][1], c=Color)
-train.plot.scatter(x="bedrooms", y="y", ax=ax[0][2], c=Color)
-train.plot.scatter(x="beds", y="y", ax=ax[0][3], c=Color)
-train.plot.scatter(x="latitude", y="y", ax=ax[1][0], c=Color)
-train.plot.scatter(x="longitude", y="y", ax=ax[1][1], c=Color)
-train.plot.scatter(x="number_of_reviews", y="y", ax=ax[1][2], c=Color)
-train.plot.scatter(x="review_scores_rating", y="y", ax=ax[1][3], c=Color)
-pyplot.tight_layout()
+name_continuous_list = name_continuous_list.reshape(2, 4)
+visualize_for_continuous(train_upper, name_continuous_list)
 
 # %%
-fig, ax = pyplot.subplots(4, 2, figsize=(18, 15))
-seaborn.boxplot(x="bed_type", y="y", data=train, ax=ax[0][0])
-seaborn.boxplot(x="cancellation_policy", y="y", data=train, ax=ax[0][1])
-seaborn.boxplot(x="city", y="y", data=train, ax=ax[1][0])
-seaborn.boxplot(x="cleaning_fee", y="y", data=train, ax=ax[1][1])
-seaborn.boxplot(x="host_has_profile_pic", y="y", data=train, ax=ax[2][0])
-seaborn.boxplot(x="host_identity_verified", y="y", data=train, ax=ax[2][1])
-seaborn.boxplot(x="instant_bookable", y="y", data=train, ax=ax[3][0])
-seaborn.boxplot(x="room_type", y="y", data=train, ax=ax[3][1])
-pyplot.tight_layout()
+name_category_list = name_category_list.reshape(4, 2)
+visualize_for_category(train_upper, name_category_list)
 
 # %%
-fig, ax = pyplot.subplots(2, 1, figsize=(30, 15))
-seaborn.boxplot(x="host_response_rate", y="y", data=train, ax=ax[0])
-seaborn.boxplot(x="property_type", y="y", data=train, ax=ax[1])
-pyplot.tight_layout()
+visualize_for_category_1d(train_upper, name_category_few_list)
+
 # %%
 train = pandas.read_csv("./train.csv")
 test = pandas.read_csv("./test.csv")
@@ -95,11 +83,8 @@ cols = [
     "review_scores_rating", "y"
 ]
 
-from sklearn.metrics import mean_squared_error as MSE
-import learning
-
 tr = dat[dat["t"] == 1][cols]
-learning.k_fold_for_LR_and_RF(tr)
+k_fold_for_LR_and_RF(tr)
 # %%
 cols = [
     "property_type", "cancellation_policy", "room_type", "number_of_reviews",
@@ -113,7 +98,7 @@ del testX["t"]
 y_train = tmp[tmp["t"] == 1]["y"]
 y_test = tmp[tmp["t"] == 0]["y"]
 
-model1, model2 = learning.linear_regression_and_random_forest(trainX, y_train)
+model1, model2 = linear_regression_and_random_forest(trainX, y_train)
 pred = model1.predict(
     trainX.loc[:, ["number_of_reviews", "review_scores_rating"]]
 ) + model2.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
@@ -123,7 +108,7 @@ p.plot(figsize=(15, 4))
 print("RMSE", MSE(y_train, pred)**0.5)
 
 # %%
-model1, model2 = learning.linear_regression_and_random_forest(trainX, y_train)
+model1, model2 = linear_regression_and_random_forest(trainX, y_train)
 pred = model1.predict(
     testX.loc[:,
               ["number_of_reviews", "review_scores_rating"]]) + model2.predict(
@@ -151,8 +136,8 @@ cols = [
 ]
 
 tr = dat[dat["t"] == 1][cols]
-learning.k_fold_for_GBR(tr)
-learning.k_fold_for_HGBR(tr)
+k_fold_for_GBR(tr)
+k_fold_for_HGBR(tr)
 
 # %%
 cols = [
@@ -167,8 +152,8 @@ del testX["t"]
 y_train = tmp[tmp["t"] == 1]["y"]
 y_test = tmp[tmp["t"] == 0]["y"]
 
-# model3 = learning.gradient_boosting_regressor(trainX, y_train)
-model4 = learning.hist_gradient_boosting_regressor(trainX, y_train)
+# model3 = gradient_boosting_regressor(trainX, y_train)
+model4 = hist_gradient_boosting_regressor(trainX, y_train)
 # pred = model3.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
 pred = model4.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
 
@@ -177,8 +162,8 @@ p.plot(figsize=(15, 4))
 print("RMSE", MSE(y_train, pred)**0.5)
 
 # %%
-# model3 = learning.gradient_boosting_regressor(trainX, y_train)
-model4 = learning.hist_gradient_boosting_regressor(trainX, y_train)
+# model3 = gradient_boosting_regressor(trainX, y_train)
+model4 = hist_gradient_boosting_regressor(trainX, y_train)
 # pred = model3.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 pred = model4.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 pyplot.figure(figsize=(15, 4))
