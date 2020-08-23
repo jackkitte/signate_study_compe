@@ -29,7 +29,8 @@ name_category_list = numpy.array([
     "host_has_profile_pic", "host_identity_verified", "instant_bookable",
     "room_type"
 ])
-name_category_few_list = numpy.array(["host_response_rate", "property_type"])
+name_category_few_list = numpy.array(
+    ["host_response_rate", "property_type", "neighbourhood"])
 
 print("Data Shapes")
 print(
@@ -83,6 +84,14 @@ for name in generator:
         print(f"{name}: \n{sorted(train[name].unique())}\n")
 
 # %%
+generator = generator_for_1d(name_category_few_list)
+for name in generator:
+    if "latitude" == name or "longitude" == name:
+        continue
+    else:
+        print(f"{name}: \n{train[name].unique()}\n")
+
+# %%
 generator = generator_for_1d(name_continuous_list)
 visualize_for_continuous_1d(train, name_continuous_list, next(generator))
 visualize_for_continuous_1d(train, name_continuous_list, next(generator))
@@ -104,6 +113,8 @@ dat["bathrooms"] = dat["bathrooms"].fillna(0)
 dat["bedrooms"] = dat["bathrooms"].fillna(0)
 dat["beds"] = dat["bathrooms"].fillna(0)
 dat["host_has_profile_pic"] = dat["host_has_profile_pic"].fillna("f")
+dat["host_response_rate"] = dat["host_response_rate"].fillna("0%")
+dat["neighbourhood"] = dat["neighbourhood"].fillna("None")
 """
 cols = [
     "property_type", "cancellation_policy", "room_type", "number_of_reviews",
@@ -121,7 +132,8 @@ cols = [
 # cols = ["number_of_reviews", "review_scores_rating", "bed_type", "y"]
 cols = [
     "number_of_reviews", "review_scores_rating", "accommodates", "beds",
-    "room_type", "city", "y"
+    "latitude", "longitude", "property_type", "room_type", "city",
+    "host_response_rate", "y"
 ]
 """
 cols = [
@@ -142,7 +154,8 @@ cols = [
 """
 cols = [
     "number_of_reviews", "review_scores_rating", "accommodates", "beds",
-    "room_type", "city", "y", "t"
+    "latitude", "longitude", "property_type", "room_type", "city",
+    "host_response_rate", "y", "t"
 ]
 
 tmp = pandas.get_dummies(dat[cols])
@@ -153,7 +166,7 @@ del testX["t"]
 y_train = tmp[tmp["t"] == 1]["y"]
 y_test = tmp[tmp["t"] == 0]["y"]
 
-model4 = gradient_boosting_regressor(trainX, y_train)
+model4 = hist_gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
 
 p = pandas.DataFrame({"actual": y_train, "pred": pred})
@@ -161,12 +174,12 @@ p.plot(figsize=(15, 4))
 print("RMSE", MSE(y_train, pred)**0.5)
 
 # %%
-model4 = gradient_boosting_regressor(trainX, y_train)
+model4 = hist_gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 pyplot.figure(figsize=(15, 4))
 pyplot.plot(pred)
 
 # %%
 sample[1] = pred
-sample.to_csv("./data/submit_GBR.csv", index=None, header=None)
+sample.to_csv("./data/submit_HGBR_second.csv", index=None, header=None)
 # %%
