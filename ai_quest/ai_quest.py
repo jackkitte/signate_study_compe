@@ -13,11 +13,15 @@ from visualize import visualize_for_continuous, visualize_for_category, visualiz
 
 seaborn.set(font="IPAexGothic", style="white")
 train = pandas.read_csv("train.csv")
+train_upper = train.query("y > 185")
+train_upper = train_upper.reset_index(drop=True)
 test = pandas.read_csv("test.csv")
 sample = pandas.read_csv("sample_submit.csv", header=None)
 
 print("Data Shapes")
-print("Train:", train.shape, "Test:", test.shape, "Sample:", sample.shape)
+print(
+    f"Train: {train.shape} Train_Upper: {train_upper.shape}  Test: {test.shape} Sample: {sample.shape}"
+)
 
 # %%
 train.head()
@@ -29,8 +33,6 @@ train.describe()
 train.describe(include='O')
 
 # %%
-train_upper = train.query("y > 185")
-train_upper = train_upper.reset_index(drop=True)
 train_upper.head()
 
 # %%
