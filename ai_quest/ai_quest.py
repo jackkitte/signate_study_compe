@@ -103,13 +103,31 @@ dat["review_scores_rating"] = dat["review_scores_rating"].fillna(0)
 dat["bathrooms"] = dat["bathrooms"].fillna(0)
 dat["bedrooms"] = dat["bathrooms"].fillna(0)
 dat["beds"] = dat["bathrooms"].fillna(0)
+dat["host_has_profile_pic"] = dat["host_has_profile_pic"].fillna("f")
 """
 cols = [
     "property_type", "cancellation_policy", "room_type", "number_of_reviews",
     "review_scores_rating", "y"
 ]
 """
-cols = ["number_of_reviews", "review_scores_rating", "y"]
+# cols = ["number_of_reviews", "review_scores_rating", "y"]
+# cols = ["number_of_reviews", "review_scores_rating", "property_type", "y"]
+# cols = ["number_of_reviews", "review_scores_rating", "room_type", "y"]
+# cols = ["number_of_reviews", "review_scores_rating", "accommodates", "y"]
+# cols = ["number_of_reviews", "review_scores_rating", "bathrooms", "y"]
+# cols = ["number_of_reviews", "review_scores_rating", "bedrooms", "y"]
+# cols = ["number_of_reviews", "review_scores_rating", "beds", "y"]
+# cols = ["number_of_reviews", "review_scores_rating", "city", "y"]
+# cols = ["number_of_reviews", "review_scores_rating", "bed_type", "y"]
+cols = [
+    "number_of_reviews", "review_scores_rating", "accommodates", "beds",
+    "room_type", "city", "y"
+]
+"""
+cols = [
+    "number_of_reviews", "review_scores_rating", "cancellation_policy", "y"
+]
+"""
 
 tr = dat[dat["t"] == 1][cols]
 k_fold_for_GBR(tr)
@@ -122,7 +140,11 @@ cols = [
     "review_scores_rating", "y", "t"
 ]
 """
-cols = ["number_of_reviews", "review_scores_rating", "y", "t"]
+cols = [
+    "number_of_reviews", "review_scores_rating", "accommodates", "beds",
+    "room_type", "city", "y", "t"
+]
+
 tmp = pandas.get_dummies(dat[cols])
 trainX = tmp[tmp["t"] == 1]
 del trainX["t"]
@@ -131,9 +153,7 @@ del testX["t"]
 y_train = tmp[tmp["t"] == 1]["y"]
 y_test = tmp[tmp["t"] == 0]["y"]
 
-# model3 = gradient_boosting_regressor(trainX, y_train)
-model4 = hist_gradient_boosting_regressor(trainX, y_train)
-# pred = model3.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
+model4 = gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
 
 p = pandas.DataFrame({"actual": y_train, "pred": pred})
@@ -141,14 +161,12 @@ p.plot(figsize=(15, 4))
 print("RMSE", MSE(y_train, pred)**0.5)
 
 # %%
-# model3 = gradient_boosting_regressor(trainX, y_train)
-model4 = hist_gradient_boosting_regressor(trainX, y_train)
-# pred = model3.predict(testX.iloc[:, ~testX.columns.str.match("y")])
+model4 = gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 pyplot.figure(figsize=(15, 4))
 pyplot.plot(pred)
 
 # %%
 sample[1] = pred
-sample.to_csv("./data/submit01.csv", index=None, header=None)
+sample.to_csv("./data/submit_GBR.csv", index=None, header=None)
 # %%
