@@ -9,7 +9,9 @@ from learning import (linear_regression_and_random_forest,
                       gradient_boosting_regressor,
                       hist_gradient_boosting_regressor, k_fold_for_LR_and_RF,
                       k_fold_for_GBR, k_fold_for_HGBR)
-from visualize import visualize_for_continuous, visualize_for_category, visualize_for_category_1d
+from visualize import (generator_for_1d, generator_for_2d,
+                       visualize_for_continuous, visualize_for_category,
+                       visualize_for_category_1d)
 
 seaborn.set(font="IPAexGothic", style="white")
 train = pandas.read_csv("./data/train.csv")
@@ -17,6 +19,16 @@ train_upper = train.query("y > 185")
 train_upper = train_upper.reset_index(drop=True)
 test = pandas.read_csv("./data/test.csv")
 sample = pandas.read_csv("./data/sample_submit.csv", header=None)
+
+name_continuous_list = numpy.array([
+    "accommodates", "bathrooms", "bedrooms", "beds", "latitude", "longitude",
+    "number_of_reviews", "review_scores_rating"
+])
+name_category_list = numpy.array([
+    "bed_type", "cancellation_policy", "city", "cleaning_fee",
+    "host_has_profile_pic", "host_identity_verified", "instant_bookable",
+    "room_type"
+])
 
 print("Data Shapes")
 print(
@@ -42,19 +54,10 @@ train_upper.describe()
 train_upper.describe(include='O')
 
 # %%
-name_continuous_list = numpy.array([
-    "accommodates", "bathrooms", "bedrooms", "beds", "latitude", "longitude",
-    "number_of_reviews", "review_scores_rating"
-])
 name_continuous_list = name_continuous_list.reshape(2, 4)
 visualize_for_continuous(train, name_continuous_list)
 
 # %%
-name_category_list = numpy.array([
-    "bed_type", "cancellation_policy", "city", "cleaning_fee",
-    "host_has_profile_pic", "host_identity_verified", "instant_bookable",
-    "room_type"
-])
 name_category_list = name_category_list.reshape(4, 2)
 visualize_for_category(train, name_category_list)
 
@@ -72,6 +75,14 @@ visualize_for_category(train_upper, name_category_list)
 
 # %%
 visualize_for_category_1d(train_upper, name_category_few_list)
+
+# %%
+generator = generator_for_1d(name_continuous_list)
+for name in generator:
+    if "latitude" == name or "longitude" == name:
+        continue
+    else:
+        print(f"{name}: \n{sorted(train[name].unique())}\n")
 
 # %%
 train = pandas.read_csv("./data/train.csv")
