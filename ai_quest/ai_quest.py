@@ -12,11 +12,11 @@ from learning import (linear_regression_and_random_forest,
 from visualize import visualize_for_continuous, visualize_for_category, visualize_for_category_1d
 
 seaborn.set(font="IPAexGothic", style="white")
-train = pandas.read_csv("train.csv")
+train = pandas.read_csv("./data/train.csv")
 train_upper = train.query("y > 185")
 train_upper = train_upper.reset_index(drop=True)
-test = pandas.read_csv("test.csv")
-sample = pandas.read_csv("sample_submit.csv", header=None)
+test = pandas.read_csv("./data/test.csv")
+sample = pandas.read_csv("./data/sample_submit.csv", header=None)
 
 print("Data Shapes")
 print(
@@ -74,9 +74,9 @@ visualize_for_category(train_upper, name_category_list)
 visualize_for_category_1d(train_upper, name_category_few_list)
 
 # %%
-train = pandas.read_csv("./train.csv")
-test = pandas.read_csv("./test.csv")
-sample = pandas.read_csv("./sample_submit.csv", header=None)
+train = pandas.read_csv("./data/train.csv")
+test = pandas.read_csv("./data/test.csv")
+sample = pandas.read_csv("./data/sample_submit.csv", header=None)
 
 train["t"] = 1
 test["t"] = 0
@@ -124,12 +124,12 @@ pyplot.plot(pred)
 
 # %%
 sample[1] = pred
-sample.to_csv("submit01.csv", index=None, header=None)
+sample.to_csv("./data/submit01.csv", index=None, header=None)
 
 # %%
-train = pandas.read_csv("./train.csv")
-test = pandas.read_csv("./test.csv")
-sample = pandas.read_csv("./sample_submit.csv", header=None)
+train = pandas.read_csv("./data/train.csv")
+test = pandas.read_csv("./data/test.csv")
+sample = pandas.read_csv("./data/sample_submit.csv", header=None)
 
 train["t"] = 1
 test["t"] = 0
@@ -177,5 +177,5 @@ pyplot.plot(pred)
 
 # %%
 sample[1] = pred
-sample.to_csv("submit01.csv", index=None, header=None)
+sample.to_csv("./data/submit01.csv", index=None, header=None)
 # %%
