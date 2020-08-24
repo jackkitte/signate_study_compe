@@ -11,7 +11,7 @@ def generator_for_pandas_rows(df):
         yield index, row
 
 
-def count_of_amenities(text, dic):
+def continuous_of_amenities(text, dic):
     text = text.replace("{", "").replace("}", "")
     text_list = text.split(",")
     sum_of_word = 0
@@ -19,6 +19,13 @@ def count_of_amenities(text, dic):
         sum_of_word += dic[word]
 
     return sum_of_word
+
+
+def count_of_amenities(text):
+    text = text.replace("{", "").replace("}", "")
+    text_list = text.split(",")
+
+    return len(text_list)
 
 
 def count_of_description(text):

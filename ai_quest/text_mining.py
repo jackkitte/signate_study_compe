@@ -18,7 +18,7 @@ from pandas_method import (generator_for_pandas_tuples,
                            generator_for_pandas_rows, count_of_amenities,
                            count_of_description, split_of_amenities,
                            split_of_description, value_for_1,
-                           value_for_continuous)
+                           value_for_continuous, continuous_of_amenities)
 
 seaborn.set(font="IPAexGothic", style="white")
 train = pandas.read_csv("./data/train.csv")
@@ -227,7 +227,7 @@ for key, value in dict4.items():
 # %%
 print(dict_origin)
 # %%
-train["count_of_amenities"] = train["amenities"].apply(count_of_amenities,
+train["count_of_amenities"] = train["amenities"].apply(continuous_of_amenities,
                                                        dic=dict_origin)
 # %%
 train.describe()
