@@ -240,6 +240,13 @@ sample = pandas.read_csv("./data/sample_submit.csv", header=None)
 train["count_of_amenities"] = train["amenities"].apply(count_of_amenities)
 train["count_of_description"] = train["description"].apply(
     count_of_description)
+train["continuous_of_amenities"] = train["amenities"].apply(
+    continuous_of_amenities, dic=dict_origin)
+test["count_of_amenities"] = test["amenities"].apply(count_of_amenities)
+test["count_of_description"] = test["description"].apply(count_of_description)
+test["continuous_of_amenities"] = train["amenities"].apply(
+    continuous_of_amenities, dic=dict_origin)
+
 train["t"] = 1
 test["t"] = 0
 dat = pandas.concat([train, test], sort=True).reset_index(drop=True)
@@ -268,7 +275,8 @@ cols = [
 cols = [
     "number_of_reviews", "review_scores_rating", "accommodates", "beds",
     "latitude", "longitude", "property_type", "room_type", "city",
-    "host_response_rate", "count_of_description", "count_of_amenities", "y"
+    "host_response_rate", "count_of_description", "continuous_of_amenities",
+    "count_of_amenities", "y"
 ]
 """
 cols = [
@@ -290,7 +298,8 @@ cols = [
 cols = [
     "number_of_reviews", "review_scores_rating", "accommodates", "beds",
     "latitude", "longitude", "property_type", "room_type", "city",
-    "host_response_rate", "y", "t"
+    "host_response_rate", "count_of_description", "continuous_of_amenities",
+    "count_of_amenities", "y", "t"
 ]
 
 tmp = pandas.get_dummies(dat[cols])
@@ -301,7 +310,7 @@ del testX["t"]
 y_train = tmp[tmp["t"] == 1]["y"]
 y_test = tmp[tmp["t"] == 0]["y"]
 
-model4 = hist_gradient_boosting_regressor(trainX, y_train)
+model4 = gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
 
 p = pandas.DataFrame({"actual": y_train, "pred": pred})
@@ -309,12 +318,12 @@ p.plot(figsize=(15, 4))
 print("RMSE", MSE(y_train, pred)**0.5)
 
 # %%
-model4 = hist_gradient_boosting_regressor(trainX, y_train)
+model4 = gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 pyplot.figure(figsize=(15, 4))
 pyplot.plot(pred)
 
 # %%
 sample[1] = pred
-sample.to_csv("./data/submit_HGBR_second.csv", index=None, header=None)
+sample.to_csv("./data/submit_GBR_third.csv", index=None, header=None)
 # %%
