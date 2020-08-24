@@ -298,8 +298,8 @@ cols = [
 cols = [
     "number_of_reviews", "review_scores_rating", "accommodates", "beds",
     "latitude", "longitude", "property_type", "room_type", "city",
-    "host_response_rate", "count_of_description", "continuous_of_amenities",
-    "count_of_amenities", "y", "t"
+    "host_response_rate", "count_of_description", "count_of_amenities", "y",
+    "t"
 ]
 
 tmp = pandas.get_dummies(dat[cols])
@@ -310,7 +310,7 @@ del testX["t"]
 y_train = tmp[tmp["t"] == 1]["y"]
 y_test = tmp[tmp["t"] == 0]["y"]
 
-model4 = gradient_boosting_regressor(trainX, y_train)
+model4 = hist_gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
 
 p = pandas.DataFrame({"actual": y_train, "pred": pred})
@@ -318,12 +318,12 @@ p.plot(figsize=(15, 4))
 print("RMSE", MSE(y_train, pred)**0.5)
 
 # %%
-model4 = gradient_boosting_regressor(trainX, y_train)
+model4 = hist_gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 pyplot.figure(figsize=(15, 4))
 pyplot.plot(pred)
 
 # %%
 sample[1] = pred
-sample.to_csv("./data/submit_GBR_third.csv", index=None, header=None)
+sample.to_csv("./data/submit_HGBR_fourth.csv", index=None, header=None)
 # %%
