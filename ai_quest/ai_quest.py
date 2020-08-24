@@ -12,6 +12,7 @@ from learning import (linear_regression_and_random_forest,
 from visualize import (generator_for_1d, generator_for_2d,
                        visualize_for_continuous, visualize_for_continuous_1d,
                        visualize_for_category, visualize_for_category_1d)
+from pandas_method import generator_for_pandas, count_of_amenities, count_of_description
 
 seaborn.set(font="IPAexGothic", style="white")
 train = pandas.read_csv("./data/train.csv")
@@ -21,8 +22,8 @@ test = pandas.read_csv("./data/test.csv")
 sample = pandas.read_csv("./data/sample_submit.csv", header=None)
 
 name_continuous_list = numpy.array([
-    "accommodates", "bathrooms", "bedrooms", "beds", "number_of_reviews",
-    "review_scores_rating"
+    "accommodates", "beds", "number_of_reviews", "review_scores_rating",
+    "count_of_amenities", "count_of_description"
 ])
 name_category_list = numpy.array([
     "bed_type", "cancellation_policy", "city", "cleaning_fee",
@@ -36,6 +37,12 @@ print("Data Shapes")
 print(
     f"Train: {train.shape} Train_Upper: {train_upper.shape}  Test: {test.shape} Sample: {sample.shape}"
 )
+
+# %%
+train["count_of_amenities"] = train["amenities"].apply(count_of_amenities)
+train["count_of_description"] = train["description"].apply(
+    count_of_description)
+train.describe()
 
 # %%
 train.head()
@@ -105,6 +112,9 @@ train = pandas.read_csv("./data/train.csv")
 test = pandas.read_csv("./data/test.csv")
 sample = pandas.read_csv("./data/sample_submit.csv", header=None)
 
+train["count_of_amenities"] = train["amenities"].apply(count_of_amenities)
+train["count_of_description"] = train["description"].apply(
+    count_of_description)
 train["t"] = 1
 test["t"] = 0
 dat = pandas.concat([train, test], sort=True).reset_index(drop=True)
@@ -133,7 +143,7 @@ cols = [
 cols = [
     "number_of_reviews", "review_scores_rating", "accommodates", "beds",
     "latitude", "longitude", "property_type", "room_type", "city",
-    "host_response_rate", "y"
+    "host_response_rate", "count_of_description", "count_of_amenities", "y"
 ]
 """
 cols = [
