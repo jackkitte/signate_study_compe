@@ -98,7 +98,7 @@ dict1 = value_for_1(dict1, generator)
 generator = generator_for_1d(count_70_over)
 dict1 = value_for_1(dict1, generator)
 generator = generator_for_1d(count_30_70)
-continuous = numpy.arange(-4, 0, 0.1)
+continuous = numpy.arange(-40, 0, 1)
 gen_continuous = generator_for_1d(continuous)
 dict1 = value_for_continuous(dict1, generator, gen_continuous)
 
@@ -112,7 +112,7 @@ dict2 = value_for_1(dict2, generator)
 generator = generator_for_1d(count_70_over)
 dict2 = value_for_1(dict2, generator)
 generator = generator_for_1d(count_30_70)
-continuous = numpy.arange(-2, 0, 0.05)
+continuous = numpy.arange(-5, 0, 0.125)
 gen_continuous = generator_for_1d(continuous)
 dict2 = value_for_continuous(dict2, generator, gen_continuous)
 
@@ -126,7 +126,7 @@ dict3 = value_for_1(dict3, generator)
 generator = generator_for_1d(count_70_over)
 dict3 = value_for_1(dict3, generator)
 generator = generator_for_1d(count_30_70)
-continuous = numpy.arange(0, 5, 0.125)
+continuous = numpy.arange(0, 2, 0.05)
 gen_continuous = generator_for_1d(continuous)
 dict3 = value_for_continuous(dict3, generator, gen_continuous)
 
@@ -140,7 +140,7 @@ dict4 = value_for_1(dict4, generator)
 generator = generator_for_1d(count_70_over)
 dict4 = value_for_1(dict4, generator)
 generator = generator_for_1d(count_30_70)
-continuous = numpy.arange(0, 20, 0.5)
+continuous = numpy.arange(0, 4, 0.1)
 gen_continuous = generator_for_1d(continuous)
 dict4 = value_for_continuous(dict4, generator, gen_continuous)
 
@@ -298,8 +298,8 @@ cols = [
 cols = [
     "number_of_reviews", "review_scores_rating", "accommodates", "beds",
     "latitude", "longitude", "property_type", "room_type", "city",
-    "host_response_rate", "count_of_description", "count_of_amenities", "y",
-    "t"
+    "host_response_rate", "count_of_description", "count_of_amenities",
+    "continuous_of_amenities", "y", "t"
 ]
 
 tmp = pandas.get_dummies(dat[cols])
@@ -310,7 +310,7 @@ del testX["t"]
 y_train = tmp[tmp["t"] == 1]["y"]
 y_test = tmp[tmp["t"] == 0]["y"]
 
-model4 = hist_gradient_boosting_regressor(trainX, y_train)
+model4 = gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
 
 p = pandas.DataFrame({"actual": y_train, "pred": pred})
@@ -318,12 +318,12 @@ p.plot(figsize=(15, 4))
 print("RMSE", MSE(y_train, pred)**0.5)
 
 # %%
-model4 = hist_gradient_boosting_regressor(trainX, y_train)
+model4 = gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 pyplot.figure(figsize=(15, 4))
 pyplot.plot(pred)
 
 # %%
 sample[1] = pred
-sample.to_csv("./data/submit_HGBR_fourth.csv", index=None, header=None)
+sample.to_csv("./data/submit_GBR_fifth.csv", index=None, header=None)
 # %%
