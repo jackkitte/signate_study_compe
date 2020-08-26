@@ -35,7 +35,10 @@ def continuous_of_description(text, dic):
 
     sum_of_word = 0
     for word in text_list:
-        sum_of_word += dic[word]
+        try:
+            sum_of_word += dic[word]
+        except KeyError:
+            sum_of_word += 1
 
     return sum_of_word
 
