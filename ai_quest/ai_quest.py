@@ -213,7 +213,7 @@ dict1 = value_for_1(dict1, generator)
 generator = generator_for_1d(count_70_over)
 dict1 = value_for_1(dict1, generator)
 generator = generator_for_1d(count_30_70)
-continuous = numpy.arange(-40, 0, 0.04)
+continuous = numpy.arange(-4, 0, 0.004)
 gen_continuous = generator_for_1d(continuous)
 dict1 = value_for_continuous(dict1, generator, gen_continuous)
 
@@ -227,7 +227,7 @@ dict2 = value_for_1(dict2, generator)
 generator = generator_for_1d(count_70_over)
 dict2 = value_for_1(dict2, generator)
 generator = generator_for_1d(count_30_70)
-continuous = numpy.arange(-5, 0, 0.005)
+continuous = numpy.arange(-2, 0, 0.002)
 gen_continuous = generator_for_1d(continuous)
 dict2 = value_for_continuous(dict2, generator, gen_continuous)
 
@@ -241,7 +241,7 @@ dict3 = value_for_1(dict3, generator)
 generator = generator_for_1d(count_70_over)
 dict3 = value_for_1(dict3, generator)
 generator = generator_for_1d(count_30_70)
-continuous = numpy.arange(0, 5, 0.005)
+continuous = numpy.arange(0, 2, 0.002)
 gen_continuous = generator_for_1d(continuous)
 dict3 = value_for_continuous(dict3, generator, gen_continuous)
 
@@ -255,7 +255,7 @@ dict4 = value_for_1(dict4, generator)
 generator = generator_for_1d(count_70_over)
 dict4 = value_for_1(dict4, generator)
 generator = generator_for_1d(count_30_70)
-continuous = numpy.arange(0, 40, 0.04)
+continuous = numpy.arange(0, 4, 0.004)
 gen_continuous = generator_for_1d(continuous)
 dict4 = value_for_continuous(dict4, generator, gen_continuous)
 
@@ -414,7 +414,7 @@ del testX["t"]
 y_train = tmp[tmp["t"] == 1]["y"]
 y_test = tmp[tmp["t"] == 0]["y"]
 
-model4 = hist_gradient_boosting_regressor(trainX, y_train)
+model4 = gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
 
 p = pandas.DataFrame({"actual": y_train, "pred": pred})
@@ -422,12 +422,12 @@ p.plot(figsize=(15, 4))
 print("RMSE", MSE(y_train, pred)**0.5)
 
 # %%
-model4 = hist_gradient_boosting_regressor(trainX, y_train)
+model4 = gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 pyplot.figure(figsize=(15, 4))
 pyplot.plot(pred)
 
 # %%
 sample[1] = pred
-sample.to_csv("./data/submit_HGBR_7.csv", index=None, header=None)
+sample.to_csv("./data/submit_GBR_8.csv", index=None, header=None)
 # %%
