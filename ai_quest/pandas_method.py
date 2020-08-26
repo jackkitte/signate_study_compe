@@ -21,6 +21,25 @@ def continuous_of_amenities(text, dic):
     return sum_of_word
 
 
+def continuous_of_description(text, dic):
+    text = text.lower()
+    text_sub = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-…]+', "", text)
+    text_sub = re.sub(r'[!-@[-`{-~]', "", text_sub)
+    text_sub = re.sub(r'([^\s\w]|_)+', "", text_sub)
+    text_sub = re.sub(
+        r'[\u2E80-\u2FDF\u3005-\u3007\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\U00020000-\U0002EBEF]+',
+        "", text_sub)
+    text_sub = re.sub(r'[ぁ-んァ-ン]+', "", text_sub)
+
+    text_list = text_sub.split()
+
+    sum_of_word = 0
+    for word in text_list:
+        sum_of_word += dic[word]
+
+    return sum_of_word
+
+
 def count_of_amenities(text):
     text = text.replace("{", "").replace("}", "")
     text_list = text.split(",")
@@ -32,7 +51,7 @@ def count_of_description(text):
     text_sub = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-…]+', "", text)
     text_sub = re.sub(r'[!-@[-`{-~]', "", text_sub)
 
-    text_list = text.split()
+    text_list = text_sub.split()
 
     return len(text_list)
 
@@ -45,10 +64,16 @@ def split_of_amenities(text):
 
 
 def split_of_description(text):
+    text = text.lower()
     text_sub = re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-…]+', "", text)
     text_sub = re.sub(r'[!-@[-`{-~]', "", text_sub)
+    text_sub = re.sub(r'([^\s\w]|_)+', "", text_sub)
+    text_sub = re.sub(
+        r'[\u2E80-\u2FDF\u3005-\u3007\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\U00020000-\U0002EBEF]+',
+        "", text_sub)
+    text_sub = re.sub(r'[ぁ-んァ-ン]+', "", text_sub)
 
-    text_list = text.split()
+    text_list = text_sub.split()
 
     return text_list
 

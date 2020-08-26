@@ -18,7 +18,8 @@ from pandas_method import (generator_for_pandas_tuples,
                            generator_for_pandas_rows, count_of_amenities,
                            count_of_description, split_of_amenities,
                            split_of_description, value_for_1,
-                           value_for_continuous, continuous_of_amenities)
+                           value_for_continuous, continuous_of_amenities,
+                           continuous_of_description)
 
 seaborn.set(font="IPAexGothic", style="white")
 train = pandas.read_csv("./data/train.csv")
@@ -239,12 +240,150 @@ name_continuous_list = numpy.array([
 ])
 visualize_for_continuous_1d(train, name_continuous_list, "y")
 # %%
-name_category_list = numpy.array([
-    "bed_type", "cancellation_policy", "city", "cleaning_fee", "Gym", "TV",
-    "Doorman", "room_type"
+train_0_to_25["count_of_description"] = train_0_to_25["description"].apply(
+    split_of_description)
+train_25_to_50["count_of_description"] = train_25_to_50["description"].apply(
+    split_of_description)
+train_50_to_75["count_of_description"] = train_50_to_75["description"].apply(
+    split_of_description)
+train_75_to_100["count_of_description"] = train_75_to_100["description"].apply(
+    split_of_description)
+
+train_0_to_25_generator = generator_for_pandas_tuples(train_0_to_25)
+train_25_to_50_generator = generator_for_pandas_tuples(train_25_to_50)
+train_50_to_75_generator = generator_for_pandas_tuples(train_50_to_75)
+train_75_to_100_generator = generator_for_pandas_tuples(train_75_to_100)
+
+list_0_to_25 = []
+list_25_to_50 = []
+list_50_to_75 = []
+list_75_to_100 = []
+for row in train_0_to_25_generator:
+    list_0_to_25.extend(row.count_of_description)
+for row in train_25_to_50_generator:
+    list_25_to_50.extend(row.count_of_description)
+for row in train_50_to_75_generator:
+    list_50_to_75.extend(row.count_of_description)
+for row in train_75_to_100_generator:
+    list_75_to_100.extend(row.count_of_description)
+
+counter1 = collections.Counter(list_0_to_25)
+counter2 = collections.Counter(list_25_to_50)
+counter3 = collections.Counter(list_50_to_75)
+counter4 = collections.Counter(list_75_to_100)
+most_counter1 = counter1.most_common()
+most_counter2 = counter2.most_common()
+most_counter3 = counter3.most_common()
+most_counter4 = counter4.most_common()
+
+for index in range(1, 2):
+    print(f"{(index-1)*10} ~ {index*10}\n")
+    print(f"{most_counter1[(index-1)*10:index*10]}\n")
+    print(f"{most_counter2[(index-1)*10:index*10]}\n")
+    print(f"{most_counter3[(index-1)*10:index*10]}\n")
+    print(f"{most_counter4[(index-1)*10:index*10]}\n")
+
+# %%
+dict1 = {}
+count_0_30 = most_counter1[0:20]
+count_30_70 = most_counter1[20:1000]
+count_70_over = most_counter1[1000:]
+
+generator = generator_for_1d(count_0_30)
+dict1 = value_for_1(dict1, generator)
+generator = generator_for_1d(count_70_over)
+dict1 = value_for_1(dict1, generator)
+generator = generator_for_1d(count_30_70)
+continuous = numpy.arange(-4, 0, 0.004)
+gen_continuous = generator_for_1d(continuous)
+dict1 = value_for_continuous(dict1, generator, gen_continuous)
+
+print(len(dict1))
+
+# %%
+dict2 = {}
+count_0_30 = most_counter2[0:20]
+count_30_70 = most_counter2[20:1000]
+count_70_over = most_counter2[1000:]
+
+generator = generator_for_1d(count_0_30)
+dict2 = value_for_1(dict2, generator)
+generator = generator_for_1d(count_70_over)
+dict2 = value_for_1(dict2, generator)
+generator = generator_for_1d(count_30_70)
+continuous = numpy.arange(-2, 0, 0.002)
+gen_continuous = generator_for_1d(continuous)
+dict2 = value_for_continuous(dict2, generator, gen_continuous)
+
+print(len(dict2))
+
+# %%
+dict3 = {}
+count_0_30 = most_counter3[0:20]
+count_30_70 = most_counter3[20:1000]
+count_70_over = most_counter3[1000:]
+
+generator = generator_for_1d(count_0_30)
+dict3 = value_for_1(dict3, generator)
+generator = generator_for_1d(count_70_over)
+dict3 = value_for_1(dict3, generator)
+generator = generator_for_1d(count_30_70)
+continuous = numpy.arange(0, 2, 0.002)
+gen_continuous = generator_for_1d(continuous)
+dict3 = value_for_continuous(dict3, generator, gen_continuous)
+
+print(len(dict3))
+
+# %%
+dict4 = {}
+count_0_30 = most_counter4[0:20]
+count_30_70 = most_counter4[20:1000]
+count_70_over = most_counter4[1000:]
+
+generator = generator_for_1d(count_0_30)
+dict4 = value_for_1(dict4, generator)
+generator = generator_for_1d(count_70_over)
+dict4 = value_for_1(dict4, generator)
+generator = generator_for_1d(count_30_70)
+continuous = numpy.arange(0, 4, 0.004)
+gen_continuous = generator_for_1d(continuous)
+dict4 = value_for_continuous(dict4, generator, gen_continuous)
+
+print(len(dict4))
+
+# %%
+dict_origin = {}
+for key, value in dict1.items():
+    if dict_origin.get(key):
+        dict_origin[key] += value
+    else:
+        dict_origin[key] = value
+for key, value in dict2.items():
+    if dict_origin.get(key):
+        dict_origin[key] += value
+    else:
+        dict_origin[key] = value
+for key, value in dict3.items():
+    if dict_origin.get(key):
+        dict_origin[key] += value
+    else:
+        dict_origin[key] = value
+for key, value in dict4.items():
+    if dict_origin.get(key):
+        dict_origin[key] += value
+    else:
+        dict_origin[key] = value
+
+# %%
+print(len(dict_origin))
+# %%
+train["count_of_description"] = train["description"].apply(
+    continuous_of_description, dic=dict_origin)
+# %%
+
+name_continuous_list = numpy.array([
+    "accommodates", "beds", "number_of_reviews", "review_scores_rating",
+    "count_of_description"
 ])
-
-name_category_list = name_category_list.reshape(4, 2)
-visualize_for_category(train, name_category_list, "y")
-
+visualize_for_continuous_1d(train, name_continuous_list, "y")
 # %%

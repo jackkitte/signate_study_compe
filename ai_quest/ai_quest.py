@@ -275,8 +275,8 @@ cols = [
 cols = [
     "number_of_reviews", "review_scores_rating", "accommodates", "beds",
     "latitude", "longitude", "property_type", "room_type", "city",
-    "host_response_rate", "count_of_description", "continuous_of_amenities",
-    "y"
+    "host_response_rate", "count_of_description", "count_of_amenities",
+    "continuous_of_amenities", "y"
 ]
 """
 cols = [
