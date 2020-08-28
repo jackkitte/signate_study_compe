@@ -9,7 +9,9 @@ from sklearn.metrics import mean_squared_error as MSE
 from learning import (linear_regression_and_random_forest,
                       gradient_boosting_regressor,
                       hist_gradient_boosting_regressor, k_fold_for_LR_and_RF,
-                      k_fold_for_GBR, k_fold_for_HGBR)
+                      k_fold_for_GBR, k_fold_for_HGBR, k_fold_for_origin_GBR,
+                      k_fold_for_origin_HGBR, k_fold_for_svr,
+                      k_fold_for_nu_svr)
 from visualize import (generator_for_1d, generator_for_2d,
                        visualize_for_continuous, visualize_for_continuous_1d,
                        visualize_for_category, visualize_for_category_1d)
@@ -384,14 +386,20 @@ dat["neighbourhood"] = dat["neighbourhood"].fillna("None")
 cols = [
     "number_of_reviews", "review_scores_rating", "accommodates", "beds",
     "latitude", "longitude", "property_type", "room_type", "city",
-    "host_response_rate", "count_of_description", "count_of_amenities",
-    "continuous_of_amenities", "continuous_of_description", "y"
+    "host_response_rate", "y"
 ]
 
 tr = dat[dat["t"] == 1][cols]
+# %%
+k_fold_for_origin_GBR(tr)
+k_fold_for_origin_HGBR(tr)
+# %%
 k_fold_for_GBR(tr)
+# %%
 k_fold_for_HGBR(tr)
-
+# %%
+k_fold_for_svr(tr)
+# k_fold_for_nu_svr(tr)
 # %%
 """
 cols = [
@@ -402,8 +410,7 @@ cols = [
 cols = [
     "number_of_reviews", "review_scores_rating", "accommodates", "beds",
     "latitude", "longitude", "property_type", "room_type", "city",
-    "host_response_rate", "count_of_description", "continuous_of_amenities",
-    "continuous_of_description", "y", "t"
+    "host_response_rate", "y", "t"
 ]
 
 tmp = pandas.get_dummies(dat[cols])
@@ -414,7 +421,7 @@ del testX["t"]
 y_train = tmp[tmp["t"] == 1]["y"]
 y_test = tmp[tmp["t"] == 0]["y"]
 
-model4 = gradient_boosting_regressor(trainX, y_train)
+model4 = hist_gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(trainX.iloc[:, ~trainX.columns.str.match("y")])
 
 p = pandas.DataFrame({"actual": y_train, "pred": pred})
@@ -422,12 +429,12 @@ p.plot(figsize=(15, 4))
 print("RMSE", MSE(y_train, pred)**0.5)
 
 # %%
-model4 = gradient_boosting_regressor(trainX, y_train)
+model4 = hist_gradient_boosting_regressor(trainX, y_train)
 pred = model4.predict(testX.iloc[:, ~testX.columns.str.match("y")])
 pyplot.figure(figsize=(15, 4))
 pyplot.plot(pred)
 
 # %%
 sample[1] = pred
-sample.to_csv("./data/submit_GBR_8.csv", index=None, header=None)
+sample.to_csv("./data/submit_HGBR_10.csv", index=None, header=None)
 # %%
